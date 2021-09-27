@@ -42,6 +42,11 @@ p {
 #current {
   background-color: #2369eb;
 }
+.github {
+  margin: 0, auto;
+  display: inline-block;
+  text-decoration: solid;
+}
 .github :hover {
   color: white;
 }
