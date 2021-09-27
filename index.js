@@ -1,117 +1,79 @@
-///Time
-
-function formatTime(now) {
-  let currentHour = now.getHours();
-  let currentMinutes = now.getMinutes();
-  if (currentHour < 10) {
-    currentHour = `0${currentHour}`;
-  }
-  if (currentMinutes < 10) {
-    currentMinutes = `0${currentMinutes}`;
-  }
-  return `${currentHour}:${currentMinutes}`;
-}
-
-let currentTime = document.querySelector("#currentTime");
 let now = new Date();
-currentTime.innerHTML = formatTime(now);
+let hour = now.getHours();
+let amOrPm = hour >= 12 ? "pm" : "am";
+hour = hour % 12 || 12;
+let minute = now.getMinutes();
+if (minute < 10) {
+  minute = `0${minute}`;
+}
+let days = ["Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"];
+let day = days[now.getDay()];
+let h5 = document.querySelector("h5");
+h5.innerHTML = ` ${day} ${hour}:${minute} ${amOrPm} `;
 
-///Day
-function formatDay(currentDay) {
-  let youbi = new Date();
-  let days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  let day = days[youbi.getDay()];
-  return `${day}`;
+//challenge 1
+
+function displayTemperature(response) {
+  console.log(response);
+  console.log(response.data.main.temp);
+  let temperature = Math.round(response.data.main.temp);
+  let h2 = document.querySelector("h2");
+  h2.innerHTML = `${temperature}℃`;
 }
 
-let currentDay = document.querySelector("h2.sunday");
-currentDay.innerHTML = formatDay(currentDay);
-
-///function goSearch(event) {
-///event.preventDefault();
-///let searchedCity = document.querySelector("#search-city");
-///let inputCity = document.querySelector("#input-city");
-/// searchedCity.innerHTML = `${inputCity.value}`;
-///}
-
-///let searchForm = document.querySelector("#search-form");
-///searchForm.addEventListener("submit", goSearch);
-
-///
-
-let celsius = "27";
-let fahren = Math.round(celsius * 1.8 + 32);
-console.log(fahren);
-
-function changeFahren(event) {
+function searchCity(event) {
   event.preventDefault();
-  let celsius = document.querySelector("#twenty-seven");
-  celsius.innerHTML = fahren;
-}
-let linkFahren = document.querySelector(".fahrenheit");
-linkFahren.addEventListener("click", changeFahren);
-
-function changeCel(event) {
-  event.preventDefault();
-  let fahren = document.querySelector("#twenty-seven");
-  fahren.innerHTML = celsius;
-}
-let linkCel = document.querySelector(".celsius");
-linkCel.addEventListener("click", changeCel);
-
-///#1 Serach Engine Homework
-
-function showTemperature(response) {
-  let updateTemp = document.querySelector("#twenty-seven");
-  updateTemp.innerHTML = Math.round(response.data.main.temp);
-  let updateCity = document.querySelector("h1");
-  updateCity.innerHTML = response.data.name;
-
-  document.querySelector("#humidity").innerHTML = response.data.main.humidity;
-  document.querySelector("#wind").innerHTML = response.data.wind.speed;
-}
-function editCity(event) {
-  event.preventDefault();
-  let inputCity = document.querySelector("#input-city");
-  let key = "7b1f52690adaedee63bcaca0fad04ef5";
-  let url = `https://api.openweathermap.org/data/2.5/weather?q=${inputCity.value}
-  &appid=${key}&units=metric`;
-  axios.get(url).then(showTemperature);
-}
-
-let searchForm = document.querySelector("#search-form");
-searchForm.addEventListener("submit", editCity);
-
-/// #2 Current Location
-
-function showTemperatureHere(response) {
-  let currentTemp = Math.round(response.data.main.temp);
-  let changeTemp = document.querySelector("#twenty-seven");
+  let searchInput = document.querySelector("#search-input");
   let h1 = document.querySelector("h1");
-  changeTemp.innerHTML = currentTemp;
-  h1.innerHTML = response.data.name;
+  h1.innerHTML = `${searchInput.value}`;
+  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${searchInput.value}&units=metric&appid=017d56650cd168d68067850318775d43`;
+  axios.get(`${apiUrl}`).then(displayTemperature);
+}
 
-  document.querySelector("#humidity").innerHTML = response.data.main.humidity;
-  document.querySelector("#wind").innerHTML = response.data.wind.speed;
+let form = document.querySelector("#search-form");
+form.addEventListener("submit", searchCity);
+
+// Challenge 2
+
+function temperatureNow(response) {
+  let currentTemp = Math.round(response.data.main.temp);
+  let newTemp = document.querySelector("h2");
+  newTemp.innerHTML = `${currentTemp}℃`;
+  let h1 = document.querySelector("h1");
+  h1.innerHTML = response.data.name;
 }
-function getPosition(position) {
-  let lati = position.coords.latitude;
-  let longi = position.coords.longitude;
-  let apiKey = "7b1f52690adaedee63bcaca0fad04ef5";
-  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lati}&lon=${longi}&appid=${apiKey}&units=metric`;
-  console.log(apiUrl);
-  axios.get(apiUrl).then(showTemperatureHere);
+function displayLocation(position) {
+  console.log(position);
+  console.log(position.coords.longitude);
+  console.log(position.coords.latitude);
+  let lon = position.coords.longitude;
+  let lat = position.coords.latitude;
+
+  let apiiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=017d56650cd168d68067850318775d43`;
+  axios.get(apiiUrl).then(temperatureNow);
 }
-function getCurrentPosition() {
-  navigator.geolocation.getCurrentPosition(getPosition);
+
+function displayPosition() {
+  navigator.geolocation.getCurrentPosition(displayLocation);
 }
-let locationButton = document.querySelector("#current-location-button");
-locationButton.addEventListener("click", getCurrentPosition);
+
+let locationButton = document.querySelector("#current");
+locationButton.addEventListener("click", displayPosition);
+
+//challenge 3
+
+// function inCelsius(event) {
+//   event.preventDefault();
+//   let celsius = document.querySelector("h2");
+//   celsius.innerHTML = "20";
+// }
+// let showCelsius = document.querySelector("#Celsius");
+// showCelsius.addEventListener("click", inCelsius);
+
+// function inFahrenheit(event) {
+//   event.preventDefault();
+//   let fahrenheit = document.querySelector("h2");
+//   fahrenheit.innerHTML = "68";
+// }
+// let showFahrenheit = document.querySelector("#Fahrenheit");
+// showFahrenheit.addEventListener("click", inFahrenheit);
