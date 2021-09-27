@@ -42,7 +42,9 @@ p {
 #current {
   background-color: #2369eb;
 }
-
+.github :hover {
+  color: white;
+}
 body {
   background: linear-gradient(#4070c9, #9eb2da);
 }
